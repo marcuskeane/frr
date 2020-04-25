@@ -284,9 +284,11 @@ def ip_learn_test(tgen, host, local, remote, ip_addr):
     int_lines = host_output.splitlines()
     mac_line = int_lines[7].split(": ")
     mac = mac_line[1]
-
+    print(host_output)
+    
     # check we have a local association between the MAC and IP
     local_output = local.vtysh_cmd("show evpn mac vni 101 mac {} json".format(mac))
+    print(local_output)
     local_output_json = json.loads(local_output)
     mac_type = local_output_json[mac]["type"]
     assertmsg = "Failed to learn local IP address on host {}".format(host.name)
@@ -308,14 +310,17 @@ def ip_learn_test(tgen, host, local, remote, ip_addr):
         remote_output = remote.vtysh_cmd(
             "show evpn mac vni 101 mac {} json".format(mac)
         )
+        print(remote_output)
         remote_output_json = json.loads(remote_output)
         type = remote_output_json[mac]["type"]
         if not remote_output_json[mac]["neighbors"] == "none":
-            converged = True
-            break
+            if  remote_output_json[mac]["neighbors"]["active"]:
+                converged = True
+                break
         count += 1
         sleep(1)
 
+    print("tries: {}".format(count))
     assertmsg = "{} remote learned mac no address: {} ".format(host.name, mac)
     assert converged == True
 
