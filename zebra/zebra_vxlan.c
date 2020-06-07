@@ -3745,7 +3745,7 @@ static int zvni_map_to_svi_ns(struct ns *ns,
 			continue;
 		zif = tmp_if->info;
 		if (!zif || zif->zif_type != ZEBRA_IF_VLAN
-		    || zif->link != in_param->br_if)
+		    || zif->link_ifindex != in_param->br_if->ifindex)
 			continue;
 		vl = (struct zebra_l2info_vlan *)&zif->l2info.vl;
 
